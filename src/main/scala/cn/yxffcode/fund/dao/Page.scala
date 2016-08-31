@@ -1,4 +1,4 @@
-package cn.yxffcode.fund.io
+package cn.yxffcode.fund.dao
 
 /**
   * @author gaohang on 8/30/16.

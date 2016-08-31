@@ -1,4 +1,4 @@
-package cn.yxffcode.fund.io
+package cn.yxffcode.fund.dao
 
 import cn.yxffcode.fund.model.FundBrief
 

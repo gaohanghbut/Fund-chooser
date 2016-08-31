@@ -1,9 +1,9 @@
-package cn.yxffcode.fund.io.impl
+package cn.yxffcode.fund.dao.impl
 
 import cn.yxffcode.freetookit.collection.MappingMap
 import cn.yxffcode.freetookit.text.TextTemplate
 import cn.yxffcode.fund.http.HttpExecutor
-import cn.yxffcode.fund.io.{FundListDownloader, Page}
+import cn.yxffcode.fund.dao.{FundListDownloader, Page}
 import cn.yxffcode.fund.model.{FundBrief, FundResponse}
 import cn.yxffcode.fund.utils.Jsons._
 import cn.yxffcode.fund.utils.Splitters._

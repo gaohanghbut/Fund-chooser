@@ -1,5 +1,7 @@
 package cn.yxffcode.fund.model
 
+import java.util.Date
+
 import cn.yxffcode.fund.utils.Maths._
 
 /**
@@ -19,6 +21,7 @@ class FundBrief {
   var threeYearDelta: BigDecimal = _
   var thisYear: BigDecimal = _
   var fromBirth: BigDecimal = _
+  var createDate: Date = _
 
   override def toString = s"FundBrief(fundCode=$fundCode, fundName=$fundName, nav=$nav, totalNav=$totalNav, weekDelta=$weekDelta, monthDelta=$monthDelta, halfYearDelta=$halfYearDelta, yearDelta=$yearDelta, twoYearDelta=$twoYearDelta, threeYearDelta=$threeYearDelta, thisYear=$thisYear, fromBirth=$fromBirth)"
 }
@@ -44,6 +47,8 @@ object FundBrief {
     brief.threeYearDelta = iter.next.toBigDecimal
     brief.thisYear = iter.next.toBigDecimal
     brief.fromBirth = iter.next.toBigDecimal
+
+    brief.createDate = new Date()
 
     return brief
   }
