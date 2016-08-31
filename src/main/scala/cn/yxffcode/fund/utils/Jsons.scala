@@ -11,13 +11,12 @@ import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
   */
 object Jsons {
 
-  private val objectMapper = initObjectMapper
-
-  private def initObjectMapper: ObjectMapper = {
+  private val objectMapper = {
     val mapper: ObjectMapper = new ObjectMapper
     mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     mapper.registerModule(DefaultScalaModule)
+    mapper
   }
 
   implicit class JsonTransformer(private val self: AnyRef) extends AnyVal {
