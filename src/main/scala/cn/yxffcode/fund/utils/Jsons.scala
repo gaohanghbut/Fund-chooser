@@ -4,7 +4,6 @@ import cn.yxffcode.freetookit.jackson.TypeReference
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 
 /**
   * @author gaohang on 8/30/16.
@@ -19,7 +18,7 @@ object Jsons {
     mapper
   }
 
-  implicit class JsonTransformer(private val self: AnyRef) extends AnyVal {
+  implicit class JsonTransformer(private val self: Any) extends AnyVal {
     @inline implicit def toJson: String = Jsons.objectMapper.writeValueAsString(self)
   }
 
