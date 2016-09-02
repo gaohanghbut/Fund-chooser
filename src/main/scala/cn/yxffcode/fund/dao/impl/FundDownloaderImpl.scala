@@ -24,7 +24,7 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
     val content: String = httpExecutor.get(url)
     val json: String = content.substring(jsonPreffix.length, content.length - 1)
 
-    json.mapJson(classOf[FundResponse]).datas.map(item => FundBrief(item.commaSplit()))
+    (json mapJson classOf[FundResponse]).datas.map(item => FundBrief(item.commaSplit()))
   }
 
   override def downloadDetail(fundCode: String): FundDetail = {
