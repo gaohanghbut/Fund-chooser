@@ -1,7 +1,7 @@
 package cn.yxffcode.fund.dao.utils
 
 import cn.yxffcode.fund.model.FundBrief
-import cn.yxffcode.fund.mongo.BeanCodec
+import cn.yxffcode.fund.mongo.FundBriefCodec
 import com.mongodb.MongoClient
 import com.mongodb.client.MongoDatabase
 import org.bson.codecs.configuration.CodecRegistries
@@ -14,7 +14,7 @@ object Mongo {
   val fundBriefDatabase: MongoDatabase = {
     val database: MongoDatabase = mongoClient.getDatabase("funddb")
     val registry = CodecRegistries.fromRegistries(database.getCodecRegistry,
-      CodecRegistries.fromCodecs(new BeanCodec[FundBrief](classOf[FundBrief])))
+      CodecRegistries.fromCodecs(new FundBriefCodec))
     database.withCodecRegistry(registry)
   }
 
