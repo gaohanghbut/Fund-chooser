@@ -12,9 +12,7 @@ import cn.yxffcode.fund.utils.Splitters._
   * @author gaohang on 8/30/16.
   */
 class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
-  private val jsonPreffix: String = "var rankData = "
-
-  private val urlTemplate: TextTemplate = new TextTemplate("http://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft=all&rs=&gs=0&sc=zzf&qdii=&pi=#{page}&pn=#{size}")
+  private val jsonPrefix: String = "var rankData = "
 
   private val httpExecutor: HttpExecutor = httpexe
 
@@ -22,7 +20,7 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
     val url = s"http://fund.eastmoney.com/data/rankhandler.aspx?op=ph&dt=kf&ft=all&rs=&gs=0&sc=zzf&qdii=&pi=${page.page}&pn=${page.size}"
 
     val content: String = httpExecutor.get(url)
-    val json: String = content.substring(jsonPreffix.length, content.length - 1)
+    val json: String = content.substring(jsonPrefix.length, content.length - 1)
 
     (json mapJson classOf[FundResponse]).datas.map(item => FundBrief(item.commaSplit()))
   }
