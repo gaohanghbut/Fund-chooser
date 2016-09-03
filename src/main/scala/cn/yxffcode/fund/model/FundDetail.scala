@@ -11,9 +11,9 @@ class FundDetail {
   var managerId: String = _
   var managerName: String = _
   var workTime: String = _
-  var selfProfit: Double = _
-  var categoryAvgProfit: Double = _
-  var stockProfit: Double = _
+  var selfProfit: BigDecimal = _
+  var categoryAvgProfit: BigDecimal = _
+  var stockProfit: BigDecimal = _
 
   override def toString = s"FundDetail(fundCode=$fundCode, managerId=$managerId, managerName=$managerName, workTime=$workTime, selfProfit=$selfProfit, categoryAvg=$categoryAvgProfit, stock=$stockProfit)"
 }

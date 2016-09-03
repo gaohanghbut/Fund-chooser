@@ -12,9 +12,9 @@ import org.bson.{BsonReader, BsonWriter}
 /**
   * @author gaohang on 9/1/16.
   */
-class FundBriefCodec extends Codec[FundBrief] {
+class SimpleObjectCodec[A](clazz: Class[A]) extends Codec[A] {
 
-  override def encode(writer: BsonWriter, value: FundBrief, encoderContext: EncoderContext): Unit = {
+  override def encode(writer: BsonWriter, value: A, encoderContext: EncoderContext): Unit = {
     if (value == null) {
       return
     }
@@ -34,21 +34,22 @@ class FundBriefCodec extends Codec[FundBrief] {
     writer.writeEndDocument()
   }
 
-  override def getEncoderClass: Class[FundBrief] = classOf[FundBrief]
+  override def getEncoderClass: Class[A] = clazz
 
-  override def decode(reader: BsonReader, decoderContext: DecoderContext): FundBrief = {
-    val brief: FundBrief = new FundBrief
+  override def decode(reader: BsonReader, decoderContext: DecoderContext): A = {
+    val value: A = clazz.newInstance()
+
     classOf[FundBrief].getDeclaredFields.foreach(field => {
       val clazz: Class[_] = field.getClass
       field.setAccessible(true)
       if (clazz eq classOf[String]) {
-        field.set(brief, reader.readString(field.getName))
+        field.set(value, reader.readString(field.getName))
       } else if (clazz eq classOf[BigDecimal]) {
-        field.set(brief, BigDecimal(reader.readDouble(field.getName)))
+        field.set(value, BigDecimal(reader.readDouble(field.getName)))
       } else if (clazz eq classOf[Date]) {
-        field.set(brief, new Date(reader.readDateTime(field.getName)))
+        field.set(value, new Date(reader.readDateTime(field.getName)))
       }
     })
-    brief
+    value
   }
 }
