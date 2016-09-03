@@ -31,18 +31,3 @@ class CrawlFundServiceImpl(val downloader: FundDownloader, val fundDao: FundDao)
     fundDao.saveDetail(detailOption.get)
   }
 }
-
-object CrawlFundServiceImpl {
-  def main(args: Array[String]) {
-    val executor = new SyncHttpExecutor
-    val downloader = new FundDownloaderImpl(executor)
-    val fundBriefDao = new FundDaoImpl
-
-    val service: CrawlFundServiceImpl = new CrawlFundServiceImpl(downloader, fundBriefDao)
-
-    service.doCrawDetail("002186")
-
-    executor.destroy
-    Mongo.mongoClient.close
-  }
-}
