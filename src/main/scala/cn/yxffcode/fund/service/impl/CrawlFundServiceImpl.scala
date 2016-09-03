@@ -28,6 +28,18 @@ class CrawlFundServiceImpl(val downloader: FundDownloader, val fundDao: FundDao)
     if (detailOption.isEmpty) {
       return
     }
-    fundDao.saveDetail(detailOption.get)
+    fundDao saveDetail detailOption.get
   }
 }
+
+object CrawlFundServiceImpl {
+
+  private val httpExecutor: SyncHttpExecutor = new SyncHttpExecutor
+
+  private val crawlFundService: CrawlFundService = new CrawlFundServiceImpl(new FundDownloaderImpl(httpExecutor), FundDaoImpl())
+
+  def apply(): CrawlFundService = crawlFundService
+
+  def destroy = httpExecutor.destroy
+}
+

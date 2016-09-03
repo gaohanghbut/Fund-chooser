@@ -27,7 +27,10 @@ class SimpleObjectCodec[A](clazz: Class[A]) extends Codec[A] {
         v match {
           case x: BigDecimal => writer.writeDouble(field.getName, x.doubleValue())
           case x: String => writer.writeString(field.getName, x)
-          case x: Date => writer.writeDateTime(field.getName, x.getTime)
+          case x: Date => {
+            val date: Date = new Date(x.getYear, x.getMonth, x.getDay)
+            writer.writeDateTime(field.getName, date.getTime)
+          }
         }
       }
     })

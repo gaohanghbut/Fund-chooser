@@ -16,7 +16,7 @@ class SyncHttpExecutor extends HttpExecutor {
     this.httpClient = HttpClients.custom().setConnectionManager(new PoolingHttpClientConnectionManager).build()
   }
 
-  def destroy {
+  def destroy = {
     httpClient.close
   }
 

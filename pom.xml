@@ -7,6 +7,7 @@
   <groupId>cn.yxffcode</groupId>
   <artifactId>fund</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
 
   <properties>
     <scala.version>2.11.8</scala.version>
@@ -21,6 +22,17 @@
   </pluginRepositories>
 
   <dependencies>
+    <dependency>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-actor_2.11</artifactId>
+      <version>2.4.9</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>

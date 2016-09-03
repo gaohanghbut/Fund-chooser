@@ -36,3 +36,10 @@ class FundDaoImpl extends FundDao {
     collection.insertOne(fundDetail)
   }
 }
+
+object FundDaoImpl {
+  private val fundDao: FundDao = new FundDaoImpl
+
+  def apply(): FundDao = fundDao
+}
+
