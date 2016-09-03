@@ -25,6 +25,6 @@ class SyncHttpExecutor extends HttpExecutor {
     if (response.getStatusLine.getStatusCode != 200) {
       return StringUtils.EMPTY
     }
-    return EntityUtils.toString(response.getEntity)
+    return EntityUtils.toString(response.getEntity, "UTF-8")
   }
 }

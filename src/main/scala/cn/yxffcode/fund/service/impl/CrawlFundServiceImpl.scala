@@ -36,7 +36,7 @@ class CrawlFundServiceImpl(val fld: FundDownloader, val fbdao: FundBriefDao) ext
 object CrawlFundServiceImpl {
   def main(args: Array[String]) {
     val executor = new SyncHttpExecutor
-    val downloader = new FundDownloaderImpl(executor);
+    val downloader = new FundDownloaderImpl(executor)
     val fundBriefDao = new FundBriefDaoImpl
 
     val service: CrawlFundServiceImpl = new CrawlFundServiceImpl(downloader, fundBriefDao)

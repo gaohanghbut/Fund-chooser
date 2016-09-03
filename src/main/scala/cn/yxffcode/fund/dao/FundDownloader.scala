@@ -8,5 +8,5 @@ import cn.yxffcode.fund.model.{FundBrief, FundDetail}
 trait FundDownloader {
   def downloadList(page: Page): List[FundBrief]
 
-  def downloadDetail(fundCode: String): FundDetail
+  def downloadDetail(fundCode: String): Option[FundDetail]
 }

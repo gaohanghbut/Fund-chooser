@@ -1,6 +1,7 @@
 package cn.yxffcode.fund.utils
 
 import com.google.common.base.Splitter
+
 import scala.collection.JavaConversions._
 
 /**
@@ -9,11 +10,14 @@ import scala.collection.JavaConversions._
 object Splitters {
 
   private val commaSplitter: Splitter = Splitter.on(',').trimResults()
+  private val eqSep: Splitter = Splitter.on('=').trimResults()
 
   implicit class StringSplitter(private val self: String) extends AnyVal {
-    def commaSplit(): Iterable[String] = commaSplitter.split(self)
+    def commaSplit(): Iterable[String] = commaSplitter split self
 
-    def commaSplitToSeq(): Seq[String] = commaSplitter.splitToList(self)
+    def =:(): Iterable[String] = eqSep split self
+
+    def commaSplitToSeq(): Seq[String] = commaSplitter splitToList self
   }
 
 }
