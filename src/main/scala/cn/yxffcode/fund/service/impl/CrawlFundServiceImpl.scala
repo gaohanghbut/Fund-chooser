@@ -19,9 +19,7 @@ class CrawlFundServiceImpl(val downloader: FundDownloader, val fundDao: FundDao)
 
   private val pageSize: Int = 100
 
-  override def doCrawlList = fundDao.saveAll(new PageResolver[FundBrief](pageSize) {
-    override def nextPage(i: Int) = downloader.downloadList(new Page(i / pageSize + 1, pageSize))
-  }.getAll)
+  override def doCrawlList(page: Page) = fundDao.saveAll(downloader.downloadList(page))
 
   override def doCrawDetail(fundCode: String): Unit = {
     val detailOption: Option[FundDetail] = downloader.downloadDetail(fundCode)
