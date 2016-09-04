@@ -6,9 +6,9 @@ import cn.yxffcode.fund.model.{FundBrief, FundDetail}
   * @author gaohang on 9/3/16.
   */
 trait FundService {
-  def getAllFundBriefs: Iterable[FundBrief];
+  def getAllFundBriefs: Iterable[FundBrief]
 
-  def getAllFundDetails: Iterable[FundDetail];
+  def getAllFundDetails: Iterable[FundDetail]
 
-  def scoreManagerForFund(fundDetail: FundDetail);
+  def scoreManagerForFund(fundDetail: FundDetail)
 }
