@@ -3,6 +3,7 @@ package cn.yxffcode.fund.dao
 import java.util.Date
 
 import cn.yxffcode.fund.model.{FundBrief, FundDetail}
+import cn.yxffcode.fund.utils.Types.{FundCode, Score}
 import com.mongodb.client.FindIterable
 
 /**
@@ -14,4 +15,8 @@ trait FundDao {
   def saveDetail(fundDetail: FundDetail)
 
   def queryFundBriefByDate(date: Date): FindIterable[FundBrief]
+
+  def queryFundDetailByDate(date: Date): FindIterable[FundDetail]
+
+  def saveSingleFundManagerScore(fundCode: FundCode, score: Score, createDate: Date)
 }

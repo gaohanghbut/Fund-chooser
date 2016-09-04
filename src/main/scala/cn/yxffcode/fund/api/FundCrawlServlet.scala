@@ -22,6 +22,6 @@ class FundCrawlServlet extends GenericServlet {
 
   override def service(req: ServletRequest, res: ServletResponse): Unit = {
     crawlFundService.doCrawlList
-    fundService.getAllFunds.foreach(fundBrief => crawlFundService.doCrawDetail(fundBrief.fundCode))
+    fundService.getAllFundBriefs.foreach(fundBrief => crawlFundService.doCrawDetail(fundBrief.fundCode))
   }
 }

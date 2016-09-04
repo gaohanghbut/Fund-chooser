@@ -3,12 +3,13 @@ package cn.yxffcode.fund.model
 import java.util.Date
 
 import cn.yxffcode.fund.utils.Maths._
+import cn.yxffcode.fund.utils.Types.FundCode
 
 /**
   * @author gaohang on 8/30/16.
   */
 class FundBrief {
-  var fundCode: String = _
+  var fundCode: FundCode = _
   var fundName: String = _
   var nav: BigDecimal = _
   var totalNav: BigDecimal = _
