@@ -42,12 +42,13 @@ class FundDaoImpl extends FundDao {
   override def queryFundDetailByDate(date: Date): FindIterable[FundDetail] = Mongo.funddb.getCollection(fundDetailCollectionName).find(new Document("createDate", date), classOf[FundDetail])
 
   override def saveSingleFundManagerScore(fundCode: FundCode, score: Score, createDate: Date): Unit = {
+    val map: util.Map[String, AnyRef] = Map[String, AnyRef](
+      "fundCode" -> fundCode,
+      "score" -> java.lang.Double.valueOf(score),
+      "createDate" -> createDate
+    )
     Mongo.funddb.getCollection(singleFundManagerScoreCollectionName)
-      .insertOne(new Document(Map[String, Object](
-        "fundCode" -> fundCode,
-        "score" -> score,
-        "createDate" -> createDate
-      )))
+      .insertOne(new Document(map))
   }
 }
 

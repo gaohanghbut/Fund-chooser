@@ -12,16 +12,9 @@ import cn.yxffcode.fund.service.impl.{CrawlFundServiceImpl, FundServiceImpl}
 @WebServlet(Array("/crawl"))
 class FundCrawlServlet extends GenericServlet {
 
-  private var crawlFundService: CrawlFundService = _
-  private var fundService: FundService = _
-
   override def init(): Unit = {
-    crawlFundService = CrawlFundServiceImpl()
-    fundService = FundServiceImpl()
   }
 
   override def service(req: ServletRequest, res: ServletResponse): Unit = {
-    crawlFundService.doCrawlList
-    fundService.getAllFundBriefs.foreach(fundBrief => crawlFundService.doCrawDetail(fundBrief.fundCode))
   }
 }

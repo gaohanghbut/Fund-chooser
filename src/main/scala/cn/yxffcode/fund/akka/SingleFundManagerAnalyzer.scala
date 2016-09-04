@@ -8,14 +8,13 @@ import cn.yxffcode.fund.service.impl.FundServiceImpl
 /**
   * @author gaohang on 9/4/16.
   */
-class SingleFundManagerAnalyzer(val fundService: FundService, val actorRef: ActorRef) extends Actor {
+class SingleFundManagerAnalyzer(val fundService: FundService) extends Actor {
   override def receive: Receive = {
-    case AnalyzeMessage =>
-      fundService.scoreManagerForFund
-      actorRef ! SingleFundManagerScoreAnalyzeFinishedMessage
+    case AnalyzeFundMessage(fundDetail) =>
+      fundService scoreManagerForFund fundDetail
   }
 }
 
 object SingleFundManagerAnalyzer {
-  def apply(actorRef: ActorRef): SingleFundManagerAnalyzer = new SingleFundManagerAnalyzer(FundServiceImpl(), actorRef)
+  def apply(): SingleFundManagerAnalyzer = new SingleFundManagerAnalyzer(FundServiceImpl())
 }

@@ -1,7 +1,7 @@
 package cn.yxffcode.fund.akka
 
 import cn.yxffcode.fund.dao.Page
-import cn.yxffcode.fund.model.FundBrief
+import cn.yxffcode.fund.model.{FundBrief, FundDetail}
 
 /**
   * @author gaohang on 9/4/16.
@@ -18,7 +18,9 @@ case class ListFinishedMessage() extends Message
 
 case class CrawlDetailMessage(val fundBrief: FundBrief) extends Message
 
-case class AnalyzeMessage() extends Message
+case class LoadFundDetailMessage() extends Message
+
+case class AnalyzeFundMessage(fundDetail: FundDetail) extends Message
 
 case class SingleFundManagerScoreAnalyzeFinishedMessage() extends Message
 

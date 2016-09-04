@@ -9,6 +9,6 @@ import cn.yxffcode.fund.service.AnalyzService
   */
 class AnalyzServiceImpl(var fundDao: FundDao) extends AnalyzService {
   override def sort(): Seq[FundBrief] = {
-
+    null
   }
 }

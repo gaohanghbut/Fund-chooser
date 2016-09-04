@@ -2,6 +2,7 @@ package cn.yxffcode.fund.akka
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.routing.RoundRobinPool
+import cn.yxffcode.fund.dao.Page
 import cn.yxffcode.fund.service.CrawlFundService
 
 /**
@@ -10,7 +11,7 @@ import cn.yxffcode.fund.service.CrawlFundService
 class CrawlTask(val numOfDetailCrawlerActor: Int,
                 val actorRef: ActorRef) extends Actor {
 
-  private val listRouter = context.actorOf(Props(ListCrawler(self)).withRouter(RoundRobinPool(1)), name = "listCrawlerRouter")
+  private val listRouter = context.actorOf(Props(ListCrawler(self)).withRouter(RoundRobinPool(2)), name = "listCrawlerRouter")
 
   private val detailRouter = context.actorOf(Props(DetailCrawler()).withRouter(RoundRobinPool(numOfDetailCrawlerActor)), name = "detailCrawlerRouter")
 
@@ -20,9 +21,12 @@ class CrawlTask(val numOfDetailCrawlerActor: Int,
   private var detailCrawlCount: Int = 0
 
   override def receive: Receive = {
-    case CrawlMessage => listRouter.forward(CrawlListMessage)
-    case ListFinishedMessage => fundBriefDelivererRouter.forward(DeliveryFundBriefMessage)
-    case CrawlDetailMessage(fundBrief) => detailRouter.forward(CrawlDetailMessage(fundBrief))
+    case CrawlMessage =>
+      for (i <- 1 to 36) {
+        listRouter ! CrawlListMessage(new Page(i, 100))
+      }
+    case ListFinishedMessage => fundBriefDelivererRouter ! DeliveryFundBriefMessage
+    case CrawlDetailMessage(fundBrief) => detailRouter ! CrawlDetailMessage(fundBrief)
     case DeliveryFinishedMessage(deliverCount) => this.deliverCount = deliverCount
     case DetailFinishedMessage() =>
       this.detailCrawlCount = this.detailCrawlCount + 1
@@ -30,4 +34,8 @@ class CrawlTask(val numOfDetailCrawlerActor: Int,
         actorRef ! CrawlFinishedMessage
       }
   }
+}
+
+object CrawlTask {
+  def apply(numOfDetailCrawlerActor: Int, actorRef: ActorRef): CrawlTask = new CrawlTask(numOfDetailCrawlerActor, actorRef)
 }
