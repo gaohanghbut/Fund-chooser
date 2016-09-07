@@ -11,8 +11,9 @@ object Maths {
     @inline def toBigDecimal: BigDecimal = NumberUtils.toDouble(self, 0)
   }
 
-  implicit class Sqrt(private val self: BigDecimal) extends AnyVal {
+  implicit class MathFunc(private val self: BigDecimal) extends AnyVal {
     @inline def sqrt: Double = math.sqrt(self.doubleValue())
+    @inline def ln: Double = math.log(self.doubleValue())
   }
 
 }

@@ -55,8 +55,16 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
       .get("series").get.asInstanceOf[List[Map[String, _]]]
 
     val profitIter: Iterator[Double] = data.map(map => map.get("data")
-      .get.asInstanceOf[List[Map[String, _]]].map(map => map.get("y")
-      .get.asInstanceOf[Double])).head.iterator
+      .get.asInstanceOf[List[Map[String, _]]].map(map => {
+      val value = map.get("y").get
+      if (value.isInstanceOf[Double]) {
+        value.asInstanceOf[Double]
+      } else if (value.isInstanceOf[Float]) {
+        value.asInstanceOf[Float].toDouble
+      } else {
+        value.asInstanceOf[Integer].toDouble
+      }
+    })).head.iterator
 
     detail.selfProfit = profitIter.next
     detail.categoryAvgProfit = profitIter.next

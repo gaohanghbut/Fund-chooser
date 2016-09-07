@@ -19,7 +19,10 @@ class FundServiceImpl(val fundDao: FundDao) extends FundService {
   }
 
   override def scoreManagerForFund(fundDetail: FundDetail): Unit = {
-    val score = ((fundDetail.selfProfit / fundDetail.categoryAvgProfit) * (fundDetail.selfProfit / fundDetail.stockProfit)).sqrt
+    if (fundDetail.categoryAvgProfit == 0 || fundDetail.stockProfit == 0) {
+      return
+    }
+    val score = ((fundDetail.selfProfit / fundDetail.categoryAvgProfit) * (fundDetail.selfProfit / fundDetail.stockProfit)).ln
     fundDao.saveSingleFundManagerScore(fundDetail.fundCode, score, today)
   }
 

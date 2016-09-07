@@ -41,18 +41,23 @@ class SimpleObjectCodec[A](clazz: Class[A]) extends Codec[A] {
 
   override def decode(reader: BsonReader, decoderContext: DecoderContext): A = {
     val value: A = clazz.newInstance()
-
-    classOf[FundBrief].getDeclaredFields.foreach(field => {
-      val clazz: Class[_] = field.getClass
-      field.setAccessible(true)
-      if (clazz eq classOf[String]) {
-        field.set(value, reader.readString(field.getName))
-      } else if (clazz eq classOf[BigDecimal]) {
-        field.set(value, BigDecimal(reader.readDouble(field.getName)))
-      } else if (clazz eq classOf[Date]) {
-        field.set(value, new Date(reader.readDateTime(field.getName)))
-      }
-    })
+    reader.readStartDocument
+    try {
+      reader.readObjectId
+      clazz.getDeclaredFields.foreach(field => {
+        val c: Class[_] = field.getType
+        field.setAccessible(true)
+        if (c eq classOf[String]) {
+          field.set(value, reader.readString(field.getName))
+        } else if (c eq classOf[BigDecimal]) {
+          field.set(value, BigDecimal(reader.readDouble(field.getName)))
+        } else if (c eq classOf[Date]) {
+          field.set(value, new Date(reader.readDateTime(field.getName)))
+        }
+      })
+    } finally {
+      reader.readEndDocument
+    }
     value
   }
 }
