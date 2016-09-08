@@ -20,20 +20,29 @@ class CrawlTask(val numOfDetailCrawlerActor: Int,
 
   private var deliverCount: Int = 0
   private var detailCrawlCount: Int = 0
+  private var crawlFinished: Boolean = false
 
   override def receive: Receive = {
     case CrawlMessage =>
+      this.crawlFinished = false
       for (i <- 1 to Consts.listTotalPage) {
         listRouter ! CrawlListMessage(new Page(i, Consts.listPageSize))
       }
     case ListFinishedMessage => fundBriefDelivererRouter ! DeliveryFundBriefMessage
     case CrawlDetailMessage(fundBrief) => detailRouter ! CrawlDetailMessage(fundBrief)
-    case DeliveryFinishedMessage(deliverCount) => this.deliverCount = deliverCount
+    case DeliveryFinishedMessage(deliverCount) =>
+      this.deliverCount = deliverCount
+      sendFinishedMessageIfNecessary
     case DetailFinishedMessage =>
       this.detailCrawlCount = this.detailCrawlCount + 1
-      if (deliverCount == detailCrawlCount) {
-        actorRef ! CrawlFinishedMessage
-      }
+      sendFinishedMessageIfNecessary
+  }
+
+  def sendFinishedMessageIfNecessary: Unit = {
+    if (deliverCount == detailCrawlCount && !this.crawlFinished) {
+      this.crawlFinished = true
+      actorRef ! CrawlFinishedMessage
+    }
   }
 }
 
