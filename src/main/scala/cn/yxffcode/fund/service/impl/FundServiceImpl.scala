@@ -6,6 +6,7 @@ import cn.yxffcode.fund.dao.FundDao
 import cn.yxffcode.fund.dao.impl.FundDaoImpl
 import cn.yxffcode.fund.model.{FundBrief, FundDetail}
 import cn.yxffcode.fund.service.FundService
+import cn.yxffcode.fund.utils.Consts
 import cn.yxffcode.fund.utils.Maths._
 
 import scala.collection.JavaConversions._
@@ -19,10 +20,8 @@ class FundServiceImpl(val fundDao: FundDao) extends FundService {
   }
 
   override def scoreManagerForFund(fundDetail: FundDetail): Unit = {
-    if (fundDetail.categoryAvgProfit == 0 || fundDetail.stockProfit == 0) {
-      return
-    }
-    val score = ((fundDetail.selfProfit / fundDetail.categoryAvgProfit) * (fundDetail.selfProfit / fundDetail.stockProfit)).ln
+    val score = ((fundDetail.selfProfit + Consts.profitAdded / fundDetail.categoryAvgProfit + Consts.profitAdded) *
+      (fundDetail.selfProfit + Consts.profitAdded / fundDetail.stockProfit + Consts.profitAdded)).ln
     fundDao.saveSingleFundManagerScore(fundDetail.fundCode, score, today)
   }
 

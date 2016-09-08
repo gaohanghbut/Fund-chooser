@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.routing.RoundRobinPool
 import cn.yxffcode.fund.dao.Page
 import cn.yxffcode.fund.service.CrawlFundService
+import cn.yxffcode.fund.utils.Consts
 
 /**
   * @author gaohang on 9/4/16.
@@ -22,8 +23,8 @@ class CrawlTask(val numOfDetailCrawlerActor: Int,
 
   override def receive: Receive = {
     case CrawlMessage =>
-      for (i <- 1 to 36) {
-        listRouter ! CrawlListMessage(new Page(i, 100))
+      for (i <- 1 to Consts.listTotalPage) {
+        listRouter ! CrawlListMessage(new Page(i, Consts.listPageSize))
       }
     case ListFinishedMessage => fundBriefDelivererRouter ! DeliveryFundBriefMessage
     case CrawlDetailMessage(fundBrief) => detailRouter ! CrawlDetailMessage(fundBrief)

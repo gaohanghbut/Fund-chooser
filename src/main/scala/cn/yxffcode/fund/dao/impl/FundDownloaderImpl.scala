@@ -68,7 +68,9 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
 
     detail.selfProfit = profitIter.next
     detail.categoryAvgProfit = profitIter.next
-    detail.stockProfit = profitIter.next
+    if (profitIter.hasNext) {
+      detail.stockProfit = profitIter.next
+    }
     val rawFundCode: String = jsonObjects.get("fS_code").get
     detail.fundCode = rawFundCode.substring(1, rawFundCode.length - 1)
 

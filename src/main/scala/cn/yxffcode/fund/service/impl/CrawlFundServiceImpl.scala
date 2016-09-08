@@ -17,8 +17,6 @@ import scala.collection.JavaConversions._
   */
 class CrawlFundServiceImpl(val downloader: FundDownloader, val fundDao: FundDao) extends CrawlFundService {
 
-  private val pageSize: Int = 100
-
   override def doCrawlList(page: Page) = fundDao.saveAll(downloader.downloadList(page))
 
   override def doCrawDetail(fundCode: String): Unit = {
