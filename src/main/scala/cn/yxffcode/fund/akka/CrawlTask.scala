@@ -29,7 +29,7 @@ class CrawlTask(val numOfDetailCrawlerActor: Int,
     case ListFinishedMessage => fundBriefDelivererRouter ! DeliveryFundBriefMessage
     case CrawlDetailMessage(fundBrief) => detailRouter ! CrawlDetailMessage(fundBrief)
     case DeliveryFinishedMessage(deliverCount) => this.deliverCount = deliverCount
-    case DetailFinishedMessage() =>
+    case DetailFinishedMessage =>
       this.detailCrawlCount = this.detailCrawlCount + 1
       if (deliverCount == detailCrawlCount) {
         actorRef ! CrawlFinishedMessage
