@@ -14,7 +14,7 @@ class CrawlTask(val numOfDetailCrawlerActor: Int,
 
   private val listRouter = context.actorOf(Props(ListCrawler(self)).withRouter(RoundRobinPool(2)), name = "listCrawlerRouter")
 
-  private val detailRouter = context.actorOf(Props(DetailCrawler()).withRouter(RoundRobinPool(numOfDetailCrawlerActor)), name = "detailCrawlerRouter")
+  private val detailRouter = context.actorOf(Props(DetailCrawler(self)).withRouter(RoundRobinPool(numOfDetailCrawlerActor)), name = "detailCrawlerRouter")
 
   private val fundBriefDelivererRouter = context.actorOf(Props(FundBriefDeliverer(self)).withRouter(RoundRobinPool(1)), name = "fundBriefDelivererRouter")
 
