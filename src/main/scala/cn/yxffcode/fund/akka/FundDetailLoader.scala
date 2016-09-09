@@ -10,7 +10,7 @@ import cn.yxffcode.fund.service.impl.FundServiceImpl
   */
 class FundDetailLoader(private val fundService: FundService, private val actorRef: ActorRef) extends Actor {
   override def receive: Receive = {
-    case LoadFundDetailMessage() =>
+    case LoadFundDetailMessage =>
       fundService.getAllFundDetails.foreach(fundDetail => actorRef ! AnalyzeFundMessage(fundDetail))
   }
 }
