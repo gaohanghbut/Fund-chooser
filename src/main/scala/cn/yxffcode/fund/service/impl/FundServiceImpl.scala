@@ -38,7 +38,7 @@ class FundServiceImpl(val fundDao: FundDao) extends FundService {
       //相对股票指数没涨
       fundDao.saveSingleFundManagerScore(fundDetail.fundCode, 0, today, days)
     }
-    val score: Double = (avgDelta * stockDelta).ln / days
+    val score: Double = (avgDelta * stockDelta).ln
     fundDao.saveSingleFundManagerScore(fundDetail.fundCode, score, today, days)
   }
 
