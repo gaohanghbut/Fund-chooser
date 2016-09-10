@@ -20,7 +20,7 @@ class FundDaoImpl extends FundDao {
 
   private val fundBriefCollectionName: String = "fund_brief"
   private val fundDetailCollectionName: String = "fund_detail"
-  private val singleFundManagerScoreCollectionName: String = "single_fund_manager_score"
+  private val singleFundManagerScoreCollectionName: String = "fund_score"
 
   override def saveAll(fundBriefs: Iterable[FundBrief]) = {
     val fundBriefCollect = Mongo.funddb.getCollection(fundBriefCollectionName, classOf[FundBrief])
@@ -41,7 +41,7 @@ class FundDaoImpl extends FundDao {
 
   override def queryFundDetailByDate(date: Date): FindIterable[FundDetail] = Mongo.funddb.getCollection(fundDetailCollectionName).find(new Document("createDate", date), classOf[FundDetail])
 
-  override def saveSingleFundManagerScore(fundCode: FundCode, score: Score, createDate: Date): Unit = {
+  override def saveSingleFundManagerScore(fundCode: FundCode, score: Score, createDate: Date, managerDays: Int): Unit = {
     val map: util.Map[String, AnyRef] = Map[String, AnyRef](
       "fundCode" -> fundCode,
       "score" -> java.lang.Double.valueOf(score),

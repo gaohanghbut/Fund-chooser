@@ -20,9 +20,26 @@ class FundServiceImpl(val fundDao: FundDao) extends FundService {
   }
 
   override def scoreManagerForFund(fundDetail: FundDetail): Unit = {
-    val score = ((fundDetail.selfProfit + Consts.profitAdded / fundDetail.categoryAvgProfit + Consts.profitAdded) *
-      (fundDetail.selfProfit + Consts.profitAdded / fundDetail.stockProfit + Consts.profitAdded)).ln
-    fundDao.saveSingleFundManagerScore(fundDetail.fundCode, score, today)
+
+    val days: Int = manageDays(fundDetail)
+
+    if (fundDetail.selfProfit < 0) {
+      fundDao.saveSingleFundManagerScore(fundDetail.fundCode, 0, today, days)
+      return
+    }
+    val avgDelta: BigDecimal = fundDetail.selfProfit - fundDetail.categoryAvgProfit
+    if (avgDelta <= 0) {
+      //低于同类平均
+      fundDao.saveSingleFundManagerScore(fundDetail.fundCode, 0, today, days)
+      return
+    }
+    val stockDelta: BigDecimal = fundDetail.selfProfit - fundDetail.stockProfit
+    if (stockDelta <= 0) {
+      //相对股票指数没涨
+      fundDao.saveSingleFundManagerScore(fundDetail.fundCode, 0, today, days)
+    }
+    val score: Double = (avgDelta * stockDelta).ln / days
+    fundDao.saveSingleFundManagerScore(fundDetail.fundCode, score, today, days)
   }
 
   override def getAllFundDetails: Iterable[FundDetail] = fundDao.queryFundDetailByDate(today)
@@ -30,6 +47,25 @@ class FundServiceImpl(val fundDao: FundDao) extends FundService {
   private def today: Date = {
     val date: Date = new Date
     new Date(date.getYear, date.getMonth, date.getDay)
+  }
+
+  private def manageDays(fundDetail: FundDetail): Int = {
+    val workTimeDesc: String = fundDetail.workTime
+    val yearOff: Int = workTimeDesc.indexOf('年')
+    var days: Int = 0
+    if (yearOff > 0) {
+      days = days + Integer.parseInt(workTimeDesc.substring(0, yearOff)) * 365
+    }
+    val dayOff: Int = workTimeDesc.indexOf('天')
+    if (dayOff > 0) {
+      val beforeDayStart: Int = workTimeDesc.indexOf('又')
+      if (beforeDayStart >= 0) {
+        days = days + Integer.parseInt(workTimeDesc.substring(beforeDayStart + 1, dayOff))
+      } else {
+        days = days + Integer.parseInt(workTimeDesc.substring(0, dayOff))
+      }
+    }
+    days
   }
 }
 
