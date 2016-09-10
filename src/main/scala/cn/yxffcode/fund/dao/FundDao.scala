@@ -19,4 +19,6 @@ trait FundDao {
   def queryFundDetailByDate(date: Date): FindIterable[FundDetail]
 
   def saveSingleFundManagerScore(fundCode: FundCode, score: Score, createDate: Date, managerDays: Int)
+
+  def queryScore(fundCode: FundCode): Score
 }

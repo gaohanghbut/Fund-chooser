@@ -8,10 +8,11 @@ import cn.yxffcode.fund.dao.utils.Mongo
 import cn.yxffcode.fund.model.{FundBrief, FundDetail}
 import cn.yxffcode.fund.utils.Types.{FundCode, Score}
 import com.google.common.collect.Lists
+import com.mongodb.BasicDBObject
 import com.mongodb.client.FindIterable
 import org.bson.Document
 
-import scala.collection.JavaConversions.mapAsJavaMap
+import scala.collection.JavaConversions._
 
 /**
   * @author gaohang on 8/31/16.
@@ -45,10 +46,21 @@ class FundDaoImpl extends FundDao {
     val map: util.Map[String, AnyRef] = Map[String, AnyRef](
       "fundCode" -> fundCode,
       "score" -> java.lang.Double.valueOf(score),
-      "createDate" -> createDate
+      "createDate" -> createDate,
+      "managerDays" -> Integer.valueOf(managerDays)
     )
     Mongo.funddb.getCollection(singleFundManagerScoreCollectionName)
       .insertOne(new Document(map))
+  }
+
+  override def queryScore(fundCode: FundCode): Score = {
+    val dbobj: BasicDBObject = new BasicDBObject
+    dbobj.put("score", Integer.valueOf(-1))
+    val scores: Iterable[Document] = Mongo.funddb.getCollection(singleFundManagerScoreCollectionName).find().sort(dbobj)
+    scores.foreach(doc => {
+      println(doc)
+    })
+    0
   }
 }
 
@@ -56,5 +68,9 @@ object FundDaoImpl {
   private val fundDao: FundDao = new FundDaoImpl
 
   def apply(): FundDao = fundDao
+
+  def main(args: Array[String]) {
+    fundDao.queryScore(null)
+  }
 }
 

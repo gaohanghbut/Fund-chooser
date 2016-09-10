@@ -23,23 +23,7 @@ class FundServiceImpl(val fundDao: FundDao) extends FundService {
 
     val days: Int = manageDays(fundDetail)
 
-    if (fundDetail.selfProfit < 0) {
-      fundDao.saveSingleFundManagerScore(fundDetail.fundCode, 0, today, days)
-      return
-    }
-    val avgDelta: BigDecimal = fundDetail.selfProfit - fundDetail.categoryAvgProfit
-    if (avgDelta <= 0) {
-      //低于同类平均
-      fundDao.saveSingleFundManagerScore(fundDetail.fundCode, 0, today, days)
-      return
-    }
-    val stockDelta: BigDecimal = fundDetail.selfProfit - fundDetail.stockProfit
-    if (stockDelta <= 0) {
-      //相对股票指数没涨
-      fundDao.saveSingleFundManagerScore(fundDetail.fundCode, 0, today, days)
-    }
-    val score: Double = (avgDelta * stockDelta).ln
-    fundDao.saveSingleFundManagerScore(fundDetail.fundCode, score, today, days)
+    fundDao.saveSingleFundManagerScore(fundDetail.fundCode, (fundDetail.selfProfit / days).doubleValue(), today, days)
   }
 
   override def getAllFundDetails: Iterable[FundDetail] = fundDao.queryFundDetailByDate(today)
