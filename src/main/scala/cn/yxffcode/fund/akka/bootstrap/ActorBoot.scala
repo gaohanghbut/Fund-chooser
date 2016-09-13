@@ -11,7 +11,7 @@ object ActorBoot {
   var taskActorRouter = system.actorOf(Props(new TaskActor), name = "taskActorRouter")
 
   def apply(): Unit = {//CrawlFinishedMessage
-    taskActorRouter ! CrawlFinishedMessage
+    taskActorRouter ! CrawlMessage
   }
 
   def destroy: Unit = {
