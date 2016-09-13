@@ -14,7 +14,3 @@ class FundDetailLoader(private val fundService: FundService, private val actorRe
       fundService.getAllFundDetails.foreach(fundDetail => actorRef ! AnalyzeFundMessage(fundDetail))
   }
 }
-
-object FundDetailLoader {
-  def apply(actorRef: ActorRef): FundDetailLoader = new FundDetailLoader(FundServiceImpl(), actorRef)
-}

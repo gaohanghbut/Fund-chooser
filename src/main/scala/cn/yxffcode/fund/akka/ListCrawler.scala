@@ -19,7 +19,3 @@ class ListCrawler(val crawlFundService: CrawlFundService, val actorRef: ActorRef
       }
   }
 }
-
-object ListCrawler {
-  def apply(actorRef: ActorRef): ListCrawler = new ListCrawler(CrawlFundServiceImpl(), actorRef)
-}

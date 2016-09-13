@@ -16,9 +16,3 @@ class DetailCrawler(val crawlFundService: CrawlFundService, val actorRef: ActorR
       actorRef ! DetailFinishedMessage
   }
 }
-
-object DetailCrawler {
-  def apply(actorRef: ActorRef): DetailCrawler =
-    new DetailCrawler(CrawlFundServiceImpl(), actorRef)
-
-}

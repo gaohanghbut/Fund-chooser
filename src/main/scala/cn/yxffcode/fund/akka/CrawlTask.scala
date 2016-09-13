@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.routing.RoundRobinPool
 import cn.yxffcode.fund.dao.Page
 import cn.yxffcode.fund.service.CrawlFundService
+import cn.yxffcode.fund.service.impl.{CrawlFundServiceImpl, FundServiceImpl}
 import cn.yxffcode.fund.utils.Consts
 
 /**
@@ -12,11 +13,11 @@ import cn.yxffcode.fund.utils.Consts
 class CrawlTask(val numOfDetailCrawlerActor: Int,
                 val actorRef: ActorRef) extends Actor {
 
-  private val listRouter = context.actorOf(Props(ListCrawler(self)).withRouter(RoundRobinPool(2)), name = "listCrawlerRouter")
+  private val listRouter = context.actorOf(Props(classOf[ListCrawler], CrawlFundServiceImpl(), self).withRouter(RoundRobinPool(2)), name = "listCrawlerRouter")
 
-  private val detailRouter = context.actorOf(Props(DetailCrawler(self)).withRouter(RoundRobinPool(numOfDetailCrawlerActor)), name = "detailCrawlerRouter")
+  private val detailRouter = context.actorOf(Props(classOf[DetailCrawler], CrawlFundServiceImpl(), self).withRouter(RoundRobinPool(numOfDetailCrawlerActor)), name = "detailCrawlerRouter")
 
-  private val fundBriefDelivererRouter = context.actorOf(Props(FundBriefDeliverer(self)).withRouter(RoundRobinPool(1)), name = "fundBriefDelivererRouter")
+  private val fundBriefDelivererRouter = context.actorOf(Props(classOf[FundBriefDeliverer], FundServiceImpl(), self).withRouter(RoundRobinPool(1)), name = "fundBriefDelivererRouter")
 
   private var deliverCount: Int = 0
   private var detailCrawlCount: Int = 0
@@ -44,8 +45,4 @@ class CrawlTask(val numOfDetailCrawlerActor: Int,
       actorRef ! CrawlFinishedMessage
     }
   }
-}
-
-object CrawlTask {
-  def apply(numOfDetailCrawlerActor: Int, actorRef: ActorRef): CrawlTask = new CrawlTask(numOfDetailCrawlerActor, actorRef)
 }

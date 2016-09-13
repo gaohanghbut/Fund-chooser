@@ -19,7 +19,3 @@ class FundBriefDeliverer(val fundService: FundService, val actorRef: ActorRef) e
       actorRef ! DeliveryFinishedMessage(count)
   }
 }
-
-object FundBriefDeliverer {
-  def apply(actorRef: ActorRef): FundBriefDeliverer = new FundBriefDeliverer(FundServiceImpl(), actorRef)
-}

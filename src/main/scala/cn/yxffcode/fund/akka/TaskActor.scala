@@ -13,7 +13,7 @@ class TaskActor extends Actor {
 
   private val numOfScoreActor: Int = Runtime.getRuntime.availableProcessors() * 2
 
-  private val crawlTaskRouter = context.actorOf(Props(CrawlTask(numOfDetailCrawlerActor, self)).withRouter(RoundRobinPool(1)), name = "crawlTaskRouter")
+  private val crawlTaskRouter = context.actorOf(Props(classOf[CrawlTask], numOfDetailCrawlerActor, self).withRouter(RoundRobinPool(1)), name = "crawlTaskRouter")
   private val analyzerTaskRouter = context.actorOf(Props(AnalyzerTask(numOfScoreActor)).withRouter(RoundRobinPool(1)), name = "analyzerTaskRouter")
 
   override def receive: Receive = {

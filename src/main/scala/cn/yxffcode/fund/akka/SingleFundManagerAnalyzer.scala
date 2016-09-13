@@ -14,7 +14,3 @@ class SingleFundManagerAnalyzer(val fundService: FundService) extends Actor {
       fundService scoreManagerForFund fundDetail
   }
 }
-
-object SingleFundManagerAnalyzer {
-  def apply(): SingleFundManagerAnalyzer = new SingleFundManagerAnalyzer(FundServiceImpl())
-}
