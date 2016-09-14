@@ -24,4 +24,9 @@ object AvgProfit {
     val powTimes: Double = math.log10(totalProfit.doubleValue()) / days
     math.pow(10, powTimes) - 1
   }
+
+  def main(args: Array[String]) {
+    println(apply(145, 2.9))
+    println(apply(694, 115.5))
+  }
 }

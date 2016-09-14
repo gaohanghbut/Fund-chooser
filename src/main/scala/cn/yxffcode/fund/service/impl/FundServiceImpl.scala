@@ -18,12 +18,7 @@ class FundServiceImpl(val fundDao: FundDao) extends FundService {
     fundDao.queryFundBriefByDate(today)
   }
 
-  override def scoreManagerForFund(fundDetail: FundDetail): Unit = {
-
-    val days: Int = fundDetail.managerIndependentDays
-
-    fundDao.saveSingleFundManagerScore(fundDetail.fundCode, AvgProfit(days, fundDetail.managerIndependentProfit.doubleValue()), today, days)
-  }
+  override def scoreManagerForFund(fundDetail: FundDetail): Unit = fundDao.saveSingleFundManagerScore(fundDetail.fundCode, AvgProfit(fundDetail.workTime, fundDetail.selfProfit.doubleValue()), today, fundDetail.workTime)
 
   override def getAllFundDetails: Iterable[FundDetail] = fundDao.queryFundDetailByDate(today)
 

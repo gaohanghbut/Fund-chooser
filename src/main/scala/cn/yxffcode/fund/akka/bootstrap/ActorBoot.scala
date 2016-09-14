@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
-import cn.yxffcode.fund.akka.{CrawlMessage, TaskActor}
+import cn.yxffcode.fund.akka.{CrawlFinishedMessage, CrawlMessage, TaskActor}
 
 import scala.concurrent.Future
 

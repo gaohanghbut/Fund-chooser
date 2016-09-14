@@ -1,10 +1,11 @@
 package cn.yxffcode.fund.dao.impl
 
 import cn.yxffcode.fund.dao.{FundDownloader, Page}
-import cn.yxffcode.fund.http.HttpExecutor
+import cn.yxffcode.fund.http.{SyncHttpExecutor, HttpExecutor}
 import cn.yxffcode.fund.model.{FundBrief, FundDetail, FundResponse}
 import cn.yxffcode.fund.utils.Jsons._
 import cn.yxffcode.fund.utils.Splitters._
+import org.apache.commons.lang3.StringUtils
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, Days}
 import org.jsoup.Jsoup
@@ -50,18 +51,24 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
     val managerChangingUrl = s"http://fund.eastmoney.com/f10/jjjl_${fundDetail.fundCode}.html"
     val managerHtml: String = httpExecutor get managerChangingUrl
     val managerDoc: Document = Jsoup.parse(managerHtml)
-    val manageStartInfo: Elements = managerDoc.select("#bodydiv > div:nth-child(9) > div.r_cont.right > div.detail > div.txt_cont > div > div:nth-child(1) > div > table > tbody > tr:nth-child(1)")
-    val columns: Seq[Element] = manageStartInfo.select("td")
-    if (columns.isEmpty) {
-      fundDetail.managerIndependentDays = 1
-      fundDetail.managerIndependentProfit = 0
-      return
+    val manageStartInfo: Elements = managerDoc.select("#bodydiv > div:nth-child(9) > div.r_cont.right > div.detail > div.txt_cont > div > div:nth-child(1) > div > table > tbody > tr")
+
+    for (tr <- manageStartInfo) {
+      val columns: Elements = tr.select("td")
+      if (!columns.isEmpty) {
+        val column: Element = columns get 2
+        column.select("a").foreach(a => {
+          if (StringUtils.equals(a.text, fundDetail.managerName)) {
+            //FIXME:同一个基金经理管理此基金的时间区间可能不连续,会导致结果不准
+            val manageDate: DateTime = managerDateFormatter.parseDateTime(columns.get(0).text())
+            val currentWorkTime: Int = Days.daysBetween(manageDate, DateTime.now()).getDays
+            if (currentWorkTime > fundDetail.workTime) {
+              fundDetail.workTime = currentWorkTime
+            }
+          }
+        })
+      }
     }
-    val manageStartDateElement: Element = columns.head
-    val manageDate: DateTime = managerDateFormatter.parseDateTime(manageStartDateElement.text())
-    fundDetail.managerIndependentDays = Days.daysBetween(manageDate, DateTime.now()).getDays
-    val profitText: String = columns.last.text
-    fundDetail.managerIndependentProfit = BigDecimal(profitText.substring(0, profitText.length - 1))
   }
 
   private def downloadDetailBasic(fundCode: String): FundDetail = {
@@ -88,7 +95,6 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
     val detail: FundDetail = new FundDetail
     detail.managerId = managerData.get("id").get.asInstanceOf[String]
     detail.managerName = managerData.get("name").get.asInstanceOf[String]
-    detail.workTime = managerData.get("workTime").get.asInstanceOf[String]
 
     val data: List[Map[String, _]] = managerData.get("profit").get.asInstanceOf[Map[String, _]]
       .get("series").get.asInstanceOf[List[Map[String, _]]]
@@ -118,5 +124,13 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
       val stocks: Seq[String] = stockDataOption.get.commaSplitToSeq()
     }
     detail
+  }
+}
+
+object FundDownloaderImpl {
+  def main(args: Array[String]) {
+    val downloader: FundDownloaderImpl = new FundDownloaderImpl(new SyncHttpExecutor)
+    val detail: Option[FundDetail] = downloader.downloadDetail("020003")
+    println(detail)
   }
 }

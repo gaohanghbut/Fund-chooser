@@ -12,7 +12,10 @@ import cn.yxffcode.fund.service.impl.CrawlFundServiceImpl
 class DetailCrawler(val crawlFundService: CrawlFundService, val actorRef: ActorRef) extends Actor {
   override def receive: Receive = {
     case CrawlDetailMessage(fundBrief) =>
-      crawlFundService.doCrawDetail(fundBrief.fundCode)
-      actorRef ! DetailFinishedMessage
+      try {
+        crawlFundService.doCrawDetail(fundBrief.fundCode)
+      } finally {
+        actorRef ! DetailFinishedMessage
+      }
   }
 }
