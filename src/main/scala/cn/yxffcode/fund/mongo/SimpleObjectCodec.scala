@@ -1,11 +1,7 @@
 package cn.yxffcode.fund.mongo
 
-import java.lang.reflect.Field
 import java.util.Date
 
-import cn.yxffcode.freetookit.jackson.TypeReference
-import cn.yxffcode.fund.model.FundBrief
-import cn.yxffcode.fund.utils.Jsons._
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 import org.bson.{BsonReader, BsonWriter}
 
@@ -31,6 +27,11 @@ class SimpleObjectCodec[A](clazz: Class[A]) extends Codec[A] {
             val date: Date = new Date(x.getYear, x.getMonth, x.getDay)
             writer.writeDateTime(field.getName, date.getTime)
           }
+          case x: Any => {
+            if (x.isInstanceOf[Int]) {
+              writer.writeInt32(field.getName, x.asInstanceOf[Int])
+            }
+          }
         }
       }
     })
@@ -53,6 +54,8 @@ class SimpleObjectCodec[A](clazz: Class[A]) extends Codec[A] {
           field.set(value, BigDecimal(reader.readDouble(field.getName)))
         } else if (c eq classOf[Date]) {
           field.set(value, new Date(reader.readDateTime(field.getName)))
+        } else if (c eq classOf[Int]) {
+          field.set(value, reader.readInt32())
         }
       })
     } finally {

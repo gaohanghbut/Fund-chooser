@@ -1,19 +1,27 @@
 package cn.yxffcode.fund.dao.impl
 
 import cn.yxffcode.fund.dao.{FundDownloader, Page}
-import cn.yxffcode.fund.http.{HttpExecutor, SyncHttpExecutor}
+import cn.yxffcode.fund.http.HttpExecutor
 import cn.yxffcode.fund.model.{FundBrief, FundDetail, FundResponse}
 import cn.yxffcode.fund.utils.Jsons._
 import cn.yxffcode.fund.utils.Splitters._
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.{DateTime, Days}
+import org.jsoup.Jsoup
+import org.jsoup.nodes.{Document, Element}
+import org.jsoup.select.Elements
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable
-import scala.io.Source._
+import scala.io.Source
 
 /**
   * @author gaohang on 8/30/16.
   */
 class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
   private val jsonPrefix = "var rankData = "
+
+  private val managerDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
   private val httpExecutor = httpexe
 
@@ -27,12 +35,42 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
   }
 
   override def downloadDetail(fundCode: String): Option[FundDetail] = {
+    val fundDetail: FundDetail = downloadDetailBasic(fundCode)
+    if (fundDetail == null) {
+      return None
+    }
+
+    downloadManagerInfo(fundDetail)
+
+    Option(fundDetail)
+  }
+
+  private def downloadManagerInfo(fundDetail: FundDetail): Unit = {
+    //download manager changing
+    val managerChangingUrl = s"http://fund.eastmoney.com/f10/jjjl_${fundDetail.fundCode}.html"
+    val managerHtml: String = httpExecutor get managerChangingUrl
+    val managerDoc: Document = Jsoup.parse(managerHtml)
+    val manageStartInfo: Elements = managerDoc.select("#bodydiv > div:nth-child(9) > div.r_cont.right > div.detail > div.txt_cont > div > div:nth-child(1) > div > table > tbody > tr:nth-child(1)")
+    val columns: Seq[Element] = manageStartInfo.select("td")
+    if (columns.isEmpty) {
+      fundDetail.managerIndependentDays = 1
+      fundDetail.managerIndependentProfit = 0
+      return
+    }
+    val manageStartDateElement: Element = columns.head
+    val manageDate: DateTime = managerDateFormatter.parseDateTime(manageStartDateElement.text())
+    fundDetail.managerIndependentDays = Days.daysBetween(manageDate, DateTime.now()).getDays
+    val profitText: String = columns.last.text
+    fundDetail.managerIndependentProfit = BigDecimal(profitText.substring(0, profitText.length - 1))
+  }
+
+  private def downloadDetailBasic(fundCode: String): FundDetail = {
     val url = s"http://fund.eastmoney.com/pingzhongdata/$fundCode.js"
     val content = httpExecutor get url
 
     //从content生成存储变成与json的map
     val jsonObjects: mutable.HashMap[String, String] = mutable.HashMap[String, String]()
-    fromString(content).getLines.foreach(line => {
+    Source.fromString(content).getLines.foreach(line => {
       if (line startsWith "var") {
         val variabledesc: Iterator[String] = ((line substring "var".length) =:).iterator
         val name: String = variabledesc.next
@@ -42,8 +80,9 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
     })
     val option: Option[String] = jsonObjects get "Data_currentFundManager"
     if (option.isEmpty) {
-      return None
+      return null
     }
+
     val managerData: Map[String, _] = option.get.mapJson(classOf[List[_]]).head.asInstanceOf[Map[String, _]]
 
     val detail: FundDetail = new FundDetail
@@ -74,6 +113,10 @@ class FundDownloaderImpl(httpexe: HttpExecutor) extends FundDownloader {
     val rawFundCode: String = jsonObjects.get("fS_code").get
     detail.fundCode = rawFundCode.substring(1, rawFundCode.length - 1)
 
-    Option(detail)
+    val stockDataOption: Option[String] = jsonObjects.get("stockCodes")
+    if (!stockDataOption.isEmpty) {
+      val stocks: Seq[String] = stockDataOption.get.commaSplitToSeq()
+    }
+    detail
   }
 }

@@ -1,7 +1,13 @@
 package cn.yxffcode.fund.akka.bootstrap
 
+import java.util.concurrent.TimeUnit
+
 import akka.actor.{ActorSystem, Props}
-import cn.yxffcode.fund.akka.{CrawlFinishedMessage, CrawlMessage, TaskActor}
+import akka.pattern.ask
+import akka.util.Timeout
+import cn.yxffcode.fund.akka.{CrawlMessage, TaskActor}
+
+import scala.concurrent.Future
 
 /**
   * @author gaohang on 9/4/16.
@@ -10,12 +16,11 @@ object ActorBoot {
   val system = ActorSystem("FundSystem")
   var taskActorRouter = system.actorOf(Props(new TaskActor), name = "taskActorRouter")
 
-  def apply(): Unit = {//CrawlFinishedMessage
-    taskActorRouter ! CrawlMessage
-  }
+  def apply() = taskActorRouter ! CrawlMessage
+  def apply(timeout: Timeout): Future[Any] = taskActorRouter.?(CrawlMessage)(timeout)
 
   def destroy: Unit = {
-    system.stop(taskActorRouter)
+    system.terminate()
   }
 
   def main(args: Array[String]) {
