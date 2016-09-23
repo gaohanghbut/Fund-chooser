@@ -1,7 +1,6 @@
 package cn.yxffcode.fund.akka
 
 import akka.actor.{Actor, Props}
-import akka.actor.Actor.Receive
 import akka.routing.RoundRobinPool
 
 /**
